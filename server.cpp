@@ -11,6 +11,15 @@ void communicateProcessOfServer(int socketID){
     }while( strcmp(buf, "EXIT") != 0 );
 }
 
+void communicateProcessOfServerForBigData(int socketID){
+    char buf[100000];
+    int dataSize = 0;
+    do{
+        dataSize += recv(socketID, &(buf[dataSize]), sizeof(buf), 0);
+    }while( dataSize < 100000 );
+    cout << buf << endl;
+}
+
 int main(void){
     SocketServer server;
     server.waitConnectionRequest();
