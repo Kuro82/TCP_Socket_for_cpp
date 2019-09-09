@@ -4,9 +4,9 @@
 
 #include<iostream>
 #include<sys/socket.h>  // socket()
-#include<netinet/in.h> // struct sockaddr_in, htonl(), sizeof()
+#include<netinet/in.h>  // struct sockaddr_in, htonl(), sizeof()
 #include<unistd.h>      // close()
-#include<arpa/inet.h>  // inet_addr()
+#include<arpa/inet.h>   // inet_addr()
 
 class SocketServer{
     private:
