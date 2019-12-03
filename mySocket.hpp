@@ -2,6 +2,11 @@
 #define CPP_MY_SOCKET
 
 
+/*
+    Don't use 'using namespace std;'
+    bind() is crashed.
+*/
+
 #include<iostream>
 #include<sys/socket.h>  // socket()
 #include<netinet/in.h>  // struct sockaddr_in, htonl(), sizeof()
@@ -70,8 +75,16 @@ class SocketServer{
             makeSocketServer(portNumber);
         }
         ~SocketServer(){
-            closeSession();
-            closeServer();
+            if( serverSocketID >= 0 ){
+                closeSession();
+                closeServer();
+            }
+        }
+        SocketServer(const SocketServer &) = delete;
+        SocketServer(SocketServer &&other):
+            serverSocketID(other.serverSocketID), addr(other.addr),
+            clientSocketID(other.clientSocketID), client(other.client), clientLen(other.clientLen){
+            other.serverSocketID = -1;
         }
 };
 class SocketClient{
@@ -96,8 +109,9 @@ class SocketClient{
             server.sin_addr.s_addr = inet_addr(IPAddress);
 
             //(3) connect server
-            connect(clientSocketID, (struct sockaddr *)&server, sizeof(server));
-
+            if( connect(clientSocketID, (struct sockaddr *)&server, sizeof(server)) < 0 ){
+                perror("client : connect");
+            }
         }
         void closeClient(){
             close(clientSocketID);
@@ -109,7 +123,14 @@ class SocketClient{
             makeSocketClient();
         }
         ~SocketClient(){
-            closeClient();
+            if( clientSocketID >= 0 ){
+                closeClient();
+            }
+        }
+        SocketClient(const SocketClient &) = delete;
+        SocketClient(SocketClient &&other):
+        clientSocketID(other.clientSocketID), server(other.server){
+            other.clientSocketID = -1;
         }
 };
 
